@@ -92,8 +92,8 @@ def features_from_sequence(fasta_csv, output_file):
     generator.generate_embeddings(
         input_file=fasta_csv,
         output_file=output_file,
-        sequence_col='seq',
-        id_col='uniprot'
+        sequence_col='Sequence',
+        id_col='ID'
     )
 
     # PCA 
@@ -101,8 +101,8 @@ def features_from_sequence(fasta_csv, output_file):
     df = pd.read_csv(output_file)
 
     # Separate features (X) and response variable (y)
-    id = df['uniprot']
-    X = df.drop(columns=['uniprot'])
+    id = df['ID']
+    X = df.drop(columns=['ID'])
  
     # Normalize the data
     scaler = StandardScaler()
