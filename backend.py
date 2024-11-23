@@ -84,21 +84,22 @@ def fasta_to_csv(fasta_file, csv_file):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def features_from_sequence(fasta_csv, output_file):
+def features_from_sequence(fasta_csv, outputfile):
 
     # Generating features
     generator = ProteinEmbeddingGenerator()
     
     generator.generate_embeddings(
         input_file=fasta_csv,
-        output_file=output_file,
+        output_file=outputfile,
         sequence_col='Sequence',
         id_col='ID'
     )
 
-    df = pd.read_csv(output_file)
-    os.remove(output_file)
-    print(f"{output_file} temp file deleted")
+    df = pd.read_csv(outputfile)
+    os.remove(outputfile)
+    print(f"{outputfile} temp file deleted")
+    print("WAZAAAAAAAAAAAA!!!!!")
     print(os.listdir("."))
 
     return df
