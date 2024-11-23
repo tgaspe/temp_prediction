@@ -98,6 +98,8 @@ def features_from_sequence(fasta_csv, output_file):
 
     df = pd.read_csv(output_file)
     os.remove(output_file)
+    print(f"{output_file} temp file deleted")
+    print(os.listdir("."))
 
     return df
 
