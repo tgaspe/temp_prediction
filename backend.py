@@ -99,6 +99,7 @@ def features_from_sequence(fasta_csv, output_file):
     # PCA 
     # Load the protlearn_features.csv file (the main feature file)
     df = pd.read_csv(output_file)
+    os.remove(output_file)
 
     # Separate features (X) and response variable (y)
     id = df['ID']

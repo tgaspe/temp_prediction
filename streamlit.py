@@ -57,14 +57,12 @@ if fasta_csv_path:
     st.subheader("Generated Features Preview")
     st.dataframe(features_df)
 
-    # Remove temp file
-    os.remove(output_features_path)
-
     # Step 3: Predict Temperature
     st.header("Step 3: Predict Temperature")
     if st.button("Run Prediction"):
         predictions = predict(features_df.drop(columns=["ID"]))
-        features_df["Predicted Temperature"] = predictions
+        features_df["pred_topt"] = predictions
+        features_df = features_df[['ID', 'pred_topt']]
         st.success("Predictions generated successfully.")
         st.subheader("Predictions")
         st.dataframe(features_df)
