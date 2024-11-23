@@ -1,11 +1,17 @@
-from transformers import AutoTokenizer, AutoModel
 import pandas as pd
 import torch
+from transformers import T5Tokenizer, T5Model
 from tqdm import tqdm
 import logging
 from pathlib import Path
 import numpy as np
-from typing import List
+from typing import List, Tuple
+import sys
+import logging
+from pathlib import Path
+import numpy as np
+from typing import List, Tuple
+import pandas as pd
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +27,12 @@ def check_dependencies():
         missing_deps.append("torch")
     
     try:
-        import transformers
+        import sentencepiece
+    except ImportError:
+        missing_deps.append("sentencepiece")
+    
+    try:
+        from transformers import T5Tokenizer, T5Model
     except ImportError:
         missing_deps.append("transformers")
     
@@ -29,12 +40,12 @@ def check_dependencies():
         raise ImportError(
             f"Missing required dependencies: {', '.join(missing_deps)}\n"
             "Please install them using:\n"
-            "pip install torch transformers"
+            "pip install torch transformers sentencepiece"
         )
 
 class ProteinEmbeddingGenerator:
     
-    def __init__(self, model_name: str = "Rostlab/prot_bert", device: str = None):
+    def __init__(self, model_name: str = "Rostlab/prot_t5_xl_uniref50", device: str = None):
         """
         Initialize the embedding generator with specified model and device.
         
@@ -50,10 +61,10 @@ class ProteinEmbeddingGenerator:
         
         try:
             logger.info("Loading tokenizer...")
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self.tokenizer = T5Tokenizer.from_pretrained(model_name, do_lower_case=False)
             
             logger.info("Loading model...")
-            self.model = AutoModel.from_pretrained(model_name).to(self.device)
+            self.model = T5Model.from_pretrained(model_name).to(self.device)
             self.model.eval()
             
         except Exception as e:
@@ -71,11 +82,13 @@ class ProteinEmbeddingGenerator:
         Returns:
             numpy.ndarray: Embedding vector
         """
+        import torch
         logger.info(f"Processing sequence: {sequence}")
 
         # Clean sequence and check validity
         sequence = ''.join(char for char in sequence if char.isalpha())
         logger.info(f"Cleaned sequence: {sequence}")
+        
 
         if not sequence:
             raise ValueError("Empty or invalid sequence")
@@ -83,16 +96,17 @@ class ProteinEmbeddingGenerator:
         # Tokenize and generate embedding
         try:
             inputs = self.tokenizer(sequence, 
-                                    return_tensors="pt", 
-                                    truncation=True, 
-                                    max_length=max_length)
+                                  return_tensors="pt", 
+                                  truncation=True, 
+                                  max_length=max_length)
             logger.info(f"Tokenized input: {inputs}")
-            
+            logger.info(f"Tokenizer configuration: {self.tokenizer}")
+            # Get the input token embeddings
             with torch.no_grad():
-                outputs = self.model(**inputs.to(self.device))
-                # Use the mean of the last hidden state as the embedding
-                embedding = outputs.last_hidden_state.mean(dim=1).squeeze().cpu().numpy()
-                logger.info(f"Generated embedding: {embedding}")
+                input_embeddings = self.model.get_input_embeddings()(inputs.input_ids.to(self.device))
+                logger.info(f"Checkpoint input_embeddings: {input_embeddings}")
+                embedding = input_embeddings.mean(dim=1).squeeze().cpu().numpy()
+                logger.info(f"Checkpoint embeddings: {embedding}")
             
             return embedding
             
@@ -116,6 +130,8 @@ class ProteinEmbeddingGenerator:
             id_col: Name of column containing protein IDs
             batch_size: Number of sequences to process at once
         """
+        from tqdm import tqdm
+        
         output_path = Path(output_file)
         
         try:
@@ -178,3 +194,4 @@ class ProteinEmbeddingGenerator:
             df.to_csv(output_path, mode='a', header=False, index=False)
         else:
             df.to_csv(output_path, index=False)
+
