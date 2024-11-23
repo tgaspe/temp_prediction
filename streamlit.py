@@ -4,6 +4,7 @@ import tempfile
 import matplotlib.pyplot as plt
 import numpy as np
 from backend import fasta_to_csv, features_from_sequence, predict
+import os
 import matplotlib.colors as mcolors
 
 # *********** Streamlit App ***********
@@ -55,6 +56,9 @@ if fasta_csv_path:
     st.success("Features successfully generated.")
     st.subheader("Generated Features Preview")
     st.dataframe(features_df)
+
+    # Remove temp file
+    os.remove(output_features_path)
 
     # Step 3: Predict Temperature
     st.header("Step 3: Predict Temperature")
