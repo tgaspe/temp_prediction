@@ -32,10 +32,10 @@ def predict(input_df):
     """
 
     # Load the trained model
-    model_classifier = joblib.load('model.pkl')
-    model_cold = joblib.load('model.pkl')
-    model_middle = joblib.load('model.pkl')
-    model_hot = joblib.load('model.pkl')
+    model_classifier = joblib.load('./models/classifier.pkl')
+    model_cold = joblib.load('./models/cold_regressor.pkl')
+    model_middle = joblib.load('./models/mid_regressor.pkl')
+    model_hot = joblib.load('./models/hot_regressor.pkl')
     
     # Convert input to numpy array (if not already) and reshape for prediction
     y_class = model_classifier.predict(input_df)  # Class predictions (vector)
