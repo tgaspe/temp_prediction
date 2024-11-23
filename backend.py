@@ -100,23 +100,25 @@ def features_from_sequence(fasta_csv, output_file):
     # Load the protlearn_features.csv file (the main feature file)
     df = pd.read_csv(output_file)
 
-    # Separate features (X) and response variable (y)
-    id = df['ID']
-    X = df.drop(columns=['ID'])
+    return df
+
+    # # Separate features (X) and response variable (y)
+    # id = df['ID']
+    # X = df.drop(columns=['ID'])
  
-    # Normalize the data
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
+    # # Normalize the data
+    # scaler = StandardScaler()
+    # X = scaler.fit_transform(X)
 
-    # Apply PCA to reduce dimensionality (retain 95% variance)
-    pca = PCA(n_components=0.95)
+    # # Apply PCA to reduce dimensionality (retain 95% variance)
+    # pca = PCA(n_components=0.95)
 
-    # Fit the data
-    X_pca = pca.fit_transform(X)
-    # Convert the transformed data to a pandas DataFrame
-    X_selected = pd.DataFrame(X_pca, columns=[f'PC{i+1}' for i in range(X_pca.shape[1])])
+    # # Fit the data
+    # X_pca = pca.fit_transform(X)
+    # # Convert the transformed data to a pandas DataFrame
+    # X_selected = pd.DataFrame(X_pca, columns=[f'PC{i+1}' for i in range(X_pca.shape[1])])
 
-    # join response and features
-    new_df = pd.concat([id, X_selected], axis=1)
+    # # join response and features
+    # new_df = pd.concat([id, X_selected], axis=1)
 
-    return new_df
+    # return new_df
