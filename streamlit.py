@@ -84,6 +84,7 @@ if fasta_csv_path:
         # Create a color list based on the normalized temperatures
         colors = [cmap(norm(value)) for value in plot_data['Predicted Temperature']]
 
+        plt.rcParams['font.family'] = 'monospace'
         # Create the bar plot
         plt.figure(figsize=(10, 6))
         bars = plt.bar(plot_data['ID'], plot_data['Predicted Temperature'], color=colors)
@@ -91,12 +92,12 @@ if fasta_csv_path:
         # Add annotations (values) to each bar
         for bar in bars:
             height = bar.get_height()  # Get the height of the bar (which is the value)
-            plt.text(bar.get_x() + bar.get_width() / 2, height, f'{height:.2f}', ha='center', va='bottom', fontsize=10, color='black')
+            plt.text(bar.get_x() + bar.get_width() / 2, height, f'{height:.2f}', ha='center', va='bottom', fontsize=10, color='black', fontweight='bold')
 
         # Labels and title
-        plt.xlabel('Protein ID')
-        plt.ylabel('Predicted Temperature')
-        plt.title('Predicted Temperature for Each Protein')
+        plt.xlabel('Protein ID', fontweight='bold', fontsize=14, labelpad=15)
+        plt.ylabel('Predicted Temperature', fontweight='bold', fontsize=14, labelpad=15)
+        plt.title('Predicted Temperature for Each Protein', fontweight='bold', fontsize=24, pad=20)
 
         # Rotate x-axis labels for better visibility
         plt.xticks(rotation=90)
