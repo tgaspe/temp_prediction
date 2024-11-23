@@ -91,6 +91,8 @@ class ProteinEmbeddingGenerator:
         sequence = ''.join(char for char in sequence if char.isalpha())
         if not sequence:
             raise ValueError("Empty or invalid sequence")
+        
+        logger.info(f"!!!!!!DID I GOT HERE?...{sequence}")
 
         # Tokenize and generate embedding
         try:
