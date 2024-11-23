@@ -1,7 +1,10 @@
 import pandas as pd
 import streamlit as st
 import tempfile
+import matplotlib.pyplot as plt
+import numpy as np
 from backend import fasta_to_csv, features_from_sequence, predict
+import matplotlib.colors as mcolors
 
 # *********** Streamlit App ***********
 
@@ -69,3 +72,24 @@ if fasta_csv_path:
             file_name="predictions.csv",
             mime="text/csv"
         )
+
+        # Step 4: Plot a bar chart of predicted temperatures with color based on value
+        st.header("Step 4: Bar Plot of Predicted Temperatures")
+        plot_data = features_df[['ID', 'Predicted Temperature']]
+
+        # Normalize the values for coloring
+        norm = mcolors.Normalize(vmin=plot_data['Predicted Temperature'].min(), vmax=plot_data['Predicted Temperature'].max())
+        cmap = plt.cm.get_cmap('coolwarm')
+
+        # Create a color list based on the normalized temperatures
+        colors = [cmap(norm(value)) for value in plot_data['Predicted Temperature']]
+
+        # Create the bar plot
+        plt.figure(figsize=(10, 6))
+        plt.bar(plot_data['ID'], plot_data['Predicted Temperature'], color=colors)
+        plt.xlabel('Protein ID')
+        plt.ylabel('Predicted Temperature')
+        plt.title('Predicted Temperature for Each Protein')
+        plt.xticks(rotation=90)  # Rotate the x-axis labels for better visibility
+        st.pyplot(plt)  # Display the plot in Streamlit
+
