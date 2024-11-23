@@ -63,24 +63,24 @@ if fasta_csv_path:
     # Step 3: Predict Temperature
     st.header("Step 3: Predict Temperature")
     if st.button("Run Prediction"):
-        predictions = predict(features_df.drop(columns=["ID"]))
-        features_df["Predicted Temperature"] = predictions
-        features_df = features_df[['ID', 'Predicted Temperature']]
+        predictions = predict(pca_df.drop(columns=["ID"]))
+        pca_df["Predicted Temperature"] = predictions
+        pca_df = pca_df[['ID', 'Predicted Temperature']]
         st.success("Predictions generated successfully.")
         st.subheader("Predictions")
-        st.dataframe(features_df)
+        st.dataframe(pca_df)
 
         # Allow users to download the predictions
         st.download_button(
             label="Download Predictions",
-            data=features_df.to_csv(index=False),
+            data=pca_df.to_csv(index=False),
             file_name="predictions.csv",
             mime="text/csv"
         )
 
         # Step 4: Plot a bar chart of predicted temperatures with color based on value
         st.header("Step 4: Bar Plot of Predicted Temperatures")
-        plot_data = features_df[['ID', 'Predicted Temperature']]
+        plot_data = pca_df[['ID', 'Predicted Temperature']]
 
         # Normalize the values for coloring
         norm = mcolors.Normalize(vmin=plot_data['Predicted Temperature'].min(), vmax=plot_data['Predicted Temperature'].max())
