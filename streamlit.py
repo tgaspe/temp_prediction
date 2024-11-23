@@ -86,10 +86,22 @@ if fasta_csv_path:
 
         # Create the bar plot
         plt.figure(figsize=(10, 6))
-        plt.bar(plot_data['ID'], plot_data['Predicted Temperature'], color=colors)
+        bars = plt.bar(plot_data['ID'], plot_data['Predicted Temperature'], color=colors)
+
+        # Add annotations (values) to each bar
+        for bar in bars:
+            height = bar.get_height()  # Get the height of the bar (which is the value)
+            plt.text(bar.get_x() + bar.get_width() / 2, height, f'{height:.2f}', ha='center', va='bottom', fontsize=10, color='black')
+
+        # Labels and title
         plt.xlabel('Protein ID')
         plt.ylabel('Predicted Temperature')
         plt.title('Predicted Temperature for Each Protein')
-        plt.xticks(rotation=90)  # Rotate the x-axis labels for better visibility
+
+        # Rotate x-axis labels for better visibility
+        plt.xticks(rotation=90)
+
+        # Display the plot in Streamlit
         st.pyplot(plt)  # Display the plot in Streamlit
+
 
