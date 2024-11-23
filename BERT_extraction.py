@@ -93,8 +93,6 @@ class ProteinEmbeddingGenerator:
         logger.info(f"Cleaned sequence: {sequence}")
         if not sequence:
             raise ValueError("Empty or invalid sequence")
-        
-        logger.info(f"!!!!!!DID I GOT HERE?...{sequence}")
 
         # Tokenize and generate embedding
         try:
@@ -102,13 +100,13 @@ class ProteinEmbeddingGenerator:
                                   return_tensors="pt", 
                                   truncation=True, 
                                   max_length=max_length)
-            logger.info(f"Tokenized input: {inputs.input_ids}")
+            logger.info(f"Tokenized input: {inputs}")
             # Get the input token embeddings
             with torch.no_grad():
                 input_embeddings = self.model.get_input_embeddings()(inputs.input_ids.to(self.device))
-                logger.info(f"LLAMA DID I GOT HERE?...{input_embeddings}")
+                logger.info(f"Checkpoint input_embeddings: {input_embeddings}")
                 embedding = input_embeddings.mean(dim=1).squeeze().cpu().numpy()
-                logger.info(f"LLAMA222 DID I GOT HERE?...{embedding}")
+                logger.info(f"Checkpoint embeddings: {embedding}")
             
             return embedding
             
