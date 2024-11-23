@@ -4,3 +4,6 @@ numpy
 biopython
 scikit-learn
 joblib
+torch
+transformers
+tqdm
