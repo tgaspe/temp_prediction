@@ -98,7 +98,7 @@ class ProteinEmbeddingGenerator:
                                   return_tensors="pt", 
                                   truncation=True, 
                                   max_length=max_length)
-            logger.info(f"WAZAAA DID I GOT HERE?...{input_embeddings}")
+            logger.info(f"WAZAAA DID I GOT HERE?...{inputs}")
             # Get the input token embeddings
             with torch.no_grad():
                 input_embeddings = self.model.get_input_embeddings()(inputs.input_ids.to(self.device))
