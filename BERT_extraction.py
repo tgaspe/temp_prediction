@@ -44,6 +44,7 @@ def check_dependencies():
         )
 
 class ProteinEmbeddingGenerator:
+    
     def __init__(self, model_name: str = "Rostlab/prot_t5_xl_uniref50", device: str = None):
         """
         Initialize the embedding generator with specified model and device.
@@ -54,10 +55,6 @@ class ProteinEmbeddingGenerator:
         """
         # Check dependencies first
         check_dependencies()
-        
-        # Import required libraries after checking
-        import torch
-        from transformers import T5Tokenizer, T5Model
         
         self.device = device if device else ('cuda' if torch.cuda.is_available() else 'cpu')
         logger.info(f"Using device: {self.device}")
