@@ -84,25 +84,56 @@ def fasta_to_csv(fasta_file, csv_file):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def features_from_sequence(fasta_csv, outputfile):
+# def features_from_sequence(fasta_csv, outputfile):
 
-    # Generating features
-    generator = ProteinEmbeddingGenerator()
+#     # Generating features
+#     generator = ProteinEmbeddingGenerator()
     
-    generator.generate_embeddings(
-        input_file=fasta_csv,
-        output_file=outputfile,
-        sequence_col='Sequence',
-        id_col='ID'
-    )
+#     generator.generate_embeddings(
+#         input_file=fasta_csv,
+#         output_file=outputfile,
+#         sequence_col='Sequence',
+#         id_col='ID'
+#     )
 
-    df = pd.read_csv(outputfile)
-    os.remove(outputfile)
-    print(f"{outputfile} temp file deleted")
-    print("WAZAAAAAAAAAAAA!!!!!")
-    print(os.listdir("."))
+#     df = pd.read_csv(outputfile)
+#     os.remove(outputfile)
+#     print(f"{outputfile} temp file deleted")
+#     print("WAZAAAAAAAAAAAA!!!!!")
+#     print(os.listdir("."))
 
-    return df
+#     return df
+
+def features_from_sequence(fasta_csv, outputfile):
+    
+    # Initialize the embedding generator
+    generator = ProteinEmbeddingGenerator()
+
+    # Read the input CSV file
+    df = pd.read_csv(fasta_csv)
+
+    # Prepare a list to hold the generated embeddings
+    embedding_list = []
+
+    # Process each sequence individually
+    for index, row in df.iterrows():
+        try:
+            sequence = row['Sequence']  # Assuming the sequence column is named 'Sequence'
+            protein_id = row['ID']      # Assuming the ID column is named 'ID'
+
+            # Generate embedding for the sequence
+            embedding = generator.process_sequence(sequence)
+
+            # Append the ID and embedding to the list
+            embedding_list.append([protein_id] + embedding.tolist())
+        except Exception as e:
+            print(f"Error processing sequence ID {row['ID']}: {e}")
+
+    # Create a DataFrame from the embeddings
+    embedding_columns = [f'emb_{i+1}' for i in range(len(embedding))]
+    embeddings_df = pd.DataFrame(embedding_list, columns=['ID'] + embedding_columns)
+
+    return embeddings_df
 
 def pca(df):
     
