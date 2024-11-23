@@ -88,6 +88,8 @@ class ProteinEmbeddingGenerator:
         # Clean sequence and check validity
         sequence = ''.join(char for char in sequence if char.isalpha())
         logger.info(f"Cleaned sequence: {sequence}")
+        
+
         if not sequence:
             raise ValueError("Empty or invalid sequence")
 
@@ -98,6 +100,7 @@ class ProteinEmbeddingGenerator:
                                   truncation=True, 
                                   max_length=max_length)
             logger.info(f"Tokenized input: {inputs}")
+            logger.info(f"Tokenizer configuration: {self.tokenizer}")
             # Get the input token embeddings
             with torch.no_grad():
                 input_embeddings = self.model.get_input_embeddings()(inputs.input_ids.to(self.device))
