@@ -100,24 +100,25 @@ def features_from_sequence(fasta_csv, output_file):
     # Load the protlearn_features.csv file (the main feature file)
     df = pd.read_csv(output_file)
 
-    # Separate features (X) and response variable (y)
-    id = df['ID']
-    X = df.drop(columns=['ID'])
+    return df
+    # # Separate features (X) and response variable (y)
+    # id = df['ID']
+    # X = df.drop(columns=['ID'])
 
-    # Load Scaler and PCA
-    scaler_loaded = joblib.load('./models/BERT_scaler.pkl')
-    pca_loaded = joblib.load('./models/BERT_pca_model.pkl')
+    # # Load Scaler and PCA
+    # scaler_loaded = joblib.load('./models/BERT_scaler.pkl')
+    # pca_loaded = joblib.load('./models/BERT_pca_model.pkl')
 
-    # Apply Scaler transformation
-    X = scaler_loaded.transform(X)
+    # # Apply Scaler transformation
+    # X = scaler_loaded.transform(X)
 
-    # Apply the PCA transformation
-    X_pca = pca_loaded.transform(X)
+    # # Apply the PCA transformation
+    # X_pca = pca_loaded.transform(X)
  
-    # Convert the transformed data to a pandas DataFrame
-    X_selected = pd.DataFrame(X_pca, columns=[f'PC{i+1}' for i in range(X_pca.shape[1])])
+    # # Convert the transformed data to a pandas DataFrame
+    # X_selected = pd.DataFrame(X_pca, columns=[f'PC{i+1}' for i in range(X_pca.shape[1])])
 
-    # join response and features
-    new_df = pd.concat([id, X_selected], axis=1)
+    # # join response and features
+    # new_df = pd.concat([id, X_selected], axis=1)
 
-    return new_df
+    # return new_df
