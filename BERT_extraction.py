@@ -184,7 +184,7 @@ class ProteinEmbeddingGenerator:
             return
             
         embedding_columns = [f'emb_{i+1}' for i in range(len(embeddings_list[0]) - 1)]
-        df = pd.DataFrame(embeddings_list, columns=['uniprot'] + embedding_columns)
+        df = pd.DataFrame(embeddings_list, columns=['ID'] + embedding_columns)
         
         if append and output_path.exists():
             df.to_csv(output_path, mode='a', header=False, index=False)
