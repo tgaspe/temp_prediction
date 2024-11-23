@@ -6,4 +6,5 @@ scikit-learn
 joblib
 torch
 transformers
+sentencepiece
 tqdm
