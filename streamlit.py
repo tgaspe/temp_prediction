@@ -3,7 +3,7 @@ import streamlit as st
 import tempfile
 import matplotlib.pyplot as plt
 import numpy as np
-from backend import fasta_to_csv, features_from_sequence, predict
+from backend import fasta_to_csv, features_from_sequence, predict, pca
 import os
 import matplotlib.colors as mcolors
 
@@ -53,9 +53,12 @@ if fasta_csv_path:
     st.header("Step 2: Generate Features")
     output_features_path = fasta_csv_path.replace(".csv", "_features.csv")
     features_df = features_from_sequence(fasta_csv_path, output_features_path)
+    pca_df = pca(features_df)
     st.success("Features successfully generated.")
     st.subheader("Generated Features Preview")
     st.dataframe(features_df)
+    st.subheader("PCA Features Preview")
+    st.dataframe(pca_df)
 
     # Step 3: Predict Temperature
     st.header("Step 3: Predict Temperature")
