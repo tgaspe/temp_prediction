@@ -7,12 +7,9 @@ import os
 import csv
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-
-# Add the path to the external directory
-external_libs_path = os.path.abspath("/data/leuven/359/vsc35907/ibp-optimal-temperature-dev/scripts/generate_features")  # Adjust the path as needed
-sys.path.append(external_libs_path)
-
-from BERT_extraction import ProteinEmbeddingGenerator  # Replace with the actual file name (without .py)
+from transformers import AutoTokenizer, AutoModel
+import torch
+from tqdm import tqdm
 
 
 # *********** Methods ***********
@@ -84,30 +81,13 @@ def fasta_to_csv(fasta_file, csv_file):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-# def features_from_sequence(fasta_csv, outputfile):
-
-#     # Generating features
-#     generator = ProteinEmbeddingGenerator()
-    
-#     generator.generate_embeddings(
-#         input_file=fasta_csv,
-#         output_file=outputfile,
-#         sequence_col='Sequence',
-#         id_col='ID'
-#     )
-
-#     df = pd.read_csv(outputfile)
-#     os.remove(outputfile)
-#     print(f"{outputfile} temp file deleted")
-#     print("WAZAAAAAAAAAAAA!!!!!")
-#     print(os.listdir("."))
-
-#     return df
 
 def features_from_sequence(fasta_csv, outputfile):
-    
-    # Initialize the embedding generator
-    generator = ProteinEmbeddingGenerator()
+    # Load ProtBert model and tokenizer
+    model_name = "Rostlab/prot_bert"
+    tokenizer = AutoTokenizer.from_pretrained(model_name, do_lower_case=False)
+    model = AutoModel.from_pretrained(model_name)
+    model.eval()  # Ensure the model is in evaluation mode
 
     # Read the input CSV file
     df = pd.read_csv(fasta_csv)
@@ -121,17 +101,28 @@ def features_from_sequence(fasta_csv, outputfile):
             sequence = row['Sequence']  # Assuming the sequence column is named 'Sequence'
             protein_id = row['ID']      # Assuming the ID column is named 'ID'
 
-            # Generate embedding for the sequence
-            embedding = generator.process_sequence(sequence)
+            # Add whitespace between amino acids as required by ProtBert
+            spaced_sequence = ' '.join(list(sequence))
 
-            # Append the ID and embedding to the list
+            # Tokenize and generate embedding
+            inputs = tokenizer(spaced_sequence, return_tensors="pt")
+            with torch.no_grad():
+                outputs = model(**inputs)
+                # Use mean pooling to create the embedding
+                embedding = outputs.last_hidden_state.mean(dim=1).squeeze().numpy()
+
+            # Append the embedding and protein ID to the list
             embedding_list.append([protein_id] + embedding.tolist())
+
         except Exception as e:
-            print(f"Error processing sequence ID {row['ID']}: {e}")
+            print(f"Error processing sequence ID {protein_id}: {e}")
 
     # Create a DataFrame from the embeddings
     embedding_columns = [f'emb_{i+1}' for i in range(len(embedding))]
     embeddings_df = pd.DataFrame(embedding_list, columns=['ID'] + embedding_columns)
+
+    # Save embeddings to the output file
+    embeddings_df.to_csv(outputfile, index=False)
 
     return embeddings_df
 
