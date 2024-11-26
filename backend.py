@@ -10,6 +10,7 @@ from sklearn.decomposition import PCA
 from transformers import AutoTokenizer, AutoModel
 import torch
 from tqdm import tqdm
+import streamlit as st
 
 
 # *********** Methods ***********
@@ -82,12 +83,19 @@ def fasta_to_csv(fasta_file, csv_file):
         print(f"An error occurred: {e}")
 
 
-def features_from_sequence(fasta_csv, outputfile):
-    # Load ProtBert model and tokenizer
+@st.cache_resource
+def load_model():
     model_name = "Rostlab/prot_bert"
     tokenizer = AutoTokenizer.from_pretrained(model_name, do_lower_case=False)
     model = AutoModel.from_pretrained(model_name)
     model.eval()  # Ensure the model is in evaluation mode
+    return tokenizer, model
+
+
+def features_from_sequence(fasta_csv, outputfile):
+    
+    # Load the tokenizer and model only once
+    tokenizer, model = load_model()
 
     # Read the input CSV file
     df = pd.read_csv(fasta_csv)
