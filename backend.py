@@ -15,6 +15,15 @@ import streamlit as st
 
 # *********** Methods ***********
 
+@st.cache_resource
+def load_models_prediction():
+
+    model_classifier = joblib.load('models/best_classifier.pkl')
+    model_cold = joblib.load('models/best_regressor_cold.pkl')
+    model_middle = joblib.load('models/best_regressor_middle.pkl')
+    model_hot = joblib.load('models/best_regressor_hot.pkl')
+    
+    return model_classifier, model_cold, model_middle, model_hot
 
 # Function to run the model on input
 def predict(input_df):
@@ -30,10 +39,7 @@ def predict(input_df):
     """
 
     # Load the trained model
-    model_classifier = joblib.load('models/best_classifier.pkl')
-    model_cold = joblib.load('models/best_regressor_cold.pkl')
-    model_middle = joblib.load('models/best_regressor_middle.pkl')
-    model_hot = joblib.load('models/best_regressor_hot.pkl')
+    model_classifier, model_cold, model_middle, model_hot = load_models_prediction()
     
     # Convert input to numpy array (if not already) and reshape for prediction
     y_class = model_classifier.predict(input_df)  # Class predictions (vector)
@@ -84,7 +90,7 @@ def fasta_to_csv(fasta_file, csv_file):
 
 
 @st.cache_resource
-def load_model():
+def load_model_tokenizer():
     model_name = "Rostlab/prot_bert"
     tokenizer = AutoTokenizer.from_pretrained(model_name, do_lower_case=False)
     model = AutoModel.from_pretrained(model_name)
@@ -95,7 +101,7 @@ def load_model():
 def features_from_sequence(fasta_csv, outputfile):
     
     # Load the tokenizer and model only once
-    tokenizer, model = load_model()
+    tokenizer, model = load_model_tokenizer()
 
     # Read the input CSV file
     df = pd.read_csv(fasta_csv)
@@ -134,6 +140,13 @@ def features_from_sequence(fasta_csv, outputfile):
 
     return embeddings_df
 
+@st.cache_resource
+def load_pca_models():
+    # Load Scaler and PCA
+    scaler_loaded = joblib.load('./models/BERT_scaler.pkl')
+    pca_loaded = joblib.load('./models/BERT_pca_model.pkl')
+    return scaler_loaded, pca_loaded
+
 def pca(df):
     
     # PCA 
@@ -142,8 +155,7 @@ def pca(df):
     X = df.drop(columns=['ID'])
 
     # Load Scaler and PCA
-    scaler_loaded = joblib.load('./models/BERT_scaler.pkl')
-    pca_loaded = joblib.load('./models/BERT_pca_model.pkl')
+    scaler_loaded, pca_loaded = load_pca_models()
 
     # Apply Scaler transformation
     X = scaler_loaded.transform(X)
