@@ -84,7 +84,7 @@ if fasta_csv_path:
 
         # Normalize the values for coloring
         norm = mcolors.Normalize(vmin=plot_data['Predicted Temperature'].min(), vmax=plot_data['Predicted Temperature'].max())
-        cmap = plt.cm.get_cmap('coolwarm')
+        cmap = plt.colormaps['coolwarm']
 
         # Create a color list based on the normalized temperatures
         colors = [cmap(norm(value)) for value in plot_data['Predicted Temperature']]
