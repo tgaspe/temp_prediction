@@ -17,14 +17,17 @@ import streamlit as st
 
 @st.cache_resource
 def load_models_prediction():
+    model = joblib.load('models/best_xgb_model.pkl')
+    return model
 
-    model_classifier = joblib.load('models/best_classifier.pkl')
-    model_cold = joblib.load('models/best_regressor_cold.pkl')
-    model_middle = joblib.load('models/best_regressor_middle.pkl')
-    model_hot = joblib.load('models/best_regressor_hot.pkl')
+# def load_models_prediction():
+
+#     model_classifier = joblib.load('models/best_classifier.pkl')
+#     model_cold = joblib.load('models/best_regressor_cold.pkl')
+#     model_middle = joblib.load('models/best_regressor_middle.pkl')
+#     model_hot = joblib.load('models/best_regressor_hot.pkl')
     
-    return model_classifier, model_cold, model_middle, model_hot
-
+#     return model_classifier, model_cold, model_middle, model_hot
 # Function to run the model on input
 def predict(input_df):
     """
@@ -39,31 +42,55 @@ def predict(input_df):
     """
 
     # Load the trained model
-    model_classifier, model_cold, model_middle, model_hot = load_models_prediction()
+    model = load_models_prediction()
     
     # Convert input to numpy array (if not already) and reshape for prediction
-    y_class = model_classifier.predict(input_df)  # Class predictions (vector)
-
-    # Initialize y_pred as an empty list to store predictions
-    y_pred = []
-
-    # Iterate over each prediction and input row
-    for idx, class_label in enumerate(y_class):
-        # Select the corresponding row of input_df
-        input_row = input_df.iloc[idx:idx+1]
-
-        # Predict using the appropriate model based on the class
-        if class_label == 0: # "cold"
-            y_pred.append(model_cold.predict(input_row)[0])
-        elif class_label == 1: # "hot" 
-            y_pred.append(model_hot.predict(input_row)[0])
-        else:  # middle
-            y_pred.append(model_middle.predict(input_row)[0])
+    y_pred = model.predict(input_df)  # Class predictions (vector)
 
     # Convert y_pred to a numpy array for consistency
-    y_pred = np.array(y_pred)
+    # y_pred = np.array(y_pred)
 
     return y_pred
+
+# Function to run the model on input
+# def predict(input_df):
+#     """
+#     Predicts the output based on the input DataFrame.
+#     Uses a classifier to determine the class and then predicts with the respective model.
+    
+#     Parameters:
+#         input_df (pd.DataFrame): Input features for prediction.
+        
+#     Returns:
+#         np.ndarray: Predicted values as a vector.
+#     """
+
+#     # Load the trained model
+#     model_classifier, model_cold, model_middle, model_hot = load_models_prediction()
+    
+#     # Convert input to numpy array (if not already) and reshape for prediction
+#     y_class = model_classifier.predict(input_df)  # Class predictions (vector)
+
+#     # Initialize y_pred as an empty list to store predictions
+#     y_pred = []
+
+#     # Iterate over each prediction and input row
+#     for idx, class_label in enumerate(y_class):
+#         # Select the corresponding row of input_df
+#         input_row = input_df.iloc[idx:idx+1]
+
+#         # Predict using the appropriate model based on the class
+#         if class_label == 0: # "cold"
+#             y_pred.append(model_cold.predict(input_row)[0])
+#         elif class_label == 1: # "hot" 
+#             y_pred.append(model_hot.predict(input_row)[0])
+#         else:  # middle
+#             y_pred.append(model_middle.predict(input_row)[0])
+
+#     # Convert y_pred to a numpy array for consistency
+#     y_pred = np.array(y_pred)
+
+#     return y_pred
 
 def fasta_to_csv(fasta_file, csv_file):
     """
