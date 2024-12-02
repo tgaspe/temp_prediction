@@ -83,11 +83,11 @@ if fasta_csv_path:
         plot_data = pca_df[['ID', 'Predicted Temperature']]
 
         # Normalize the values for coloring
-        #norm = mcolors.Normalize(vmin=plot_data['Predicted Temperature'].min(), vmax=plot_data['Predicted Temperature'].max())
+        norm = mcolors.Normalize(vmin=0, vmax=100)
         cmap = plt.colormaps['coolwarm']
 
         # Create a color list based on the normalized temperatures
-        colors = [cmap(value) for value in plot_data['Predicted Temperature']]
+        colors = [cmap(norm(value)) for value in plot_data['Predicted Temperature']]
 
         plt.rcParams['font.family'] = 'monospace'
         # Create the bar plot
